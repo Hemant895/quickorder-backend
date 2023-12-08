@@ -28,6 +28,26 @@ exports.getProduct = async (req, res) => {
   const product = await Product.findById(id);
   res.json(product);
 };
+exports.searchProduct = async (req, res) => {
+    // const searchTerm = req.params.searchTerm;
+    // console.log(searchTerm);
+   const foods = await Product.find();
+   const { searchTerm, name } = req.query;
+
+  let filteredFoods = [...foods];
+
+  if (searchTerm) {
+    const searchTermLowerCase = searchTerm.toLowerCase();
+    filteredFoods = filteredFoods.filter(food =>
+      food.name.toLowerCase().includes(searchTermLowerCase)
+    );
+  }
+
+  if (name) {
+    filteredFoods = filteredFoods.filter(food => food.name === name);
+  }
+  res.json(filteredFoods);
+  };
 exports.replaceProduct = async (req, res) => {
   const id = req.params.id;
   try{
