@@ -1,15 +1,76 @@
-// const fs = require('fs');
-// // const index = fs.readFileSync('index.html', 'utf-8');
-// const path = require('path');
-// // const data = JSON.parse(fs.readFileSync(path.resolve(__dirname,'../data.json'), 'utf-8'));
-// const users = data.users;
-
-// exports.createUser = (req, res) => {
-//   console.log(req.body);
-//   users.push(req.body);
-//   res.status(201).json(req.body);
-// };
-
+const express = require('express');
+const mongoose = require('mongoose');
+const router = express.Router();
+const model = require('../models/user')
+const bcrypt = require('bcrypt')
+const User = model.user;
+const { Schema } = mongoose;
+const jwt = require('jsonwebtoken')
+exports.createUser = (req, res,next) => {
+  bcrypt.hash(req.body.password,10,(err,hash)=>{
+    if(err){
+        return res.status(500).json({
+            error:err
+        })
+    }
+    else{
+        const user = new User({
+            username:req.body.username,
+            password:hash,
+            email:req.body.email,
+            phone:req.body.phone,
+            userType:req.body.userType
+        })
+        user.save((err,result)=>{
+            console.log({err,result})
+            if(err){
+              res.status(500).json({error:err});
+            } else{
+              res.status(200).json({newUser:result});
+            }
+          })
+    }
+ })
+};
+exports.login =  (req, res,next) => {
+    User.find({username:req.body.username}).exec()
+    .then((user)=>{
+        if(user.length < 1 ){
+            return res.status(401).json({message:"user not found"});
+        }
+        else{
+            bcrypt.compare(req.body.password,user[0].password,(err,result)=>{
+                if(!result){
+                    return res.status(401).json({message:"password is wrong"});
+                }
+                if(result){
+                 const token = jwt.sign({
+                    username:user[0].username,
+                    userType:user[0].userType,
+                    phone:user[0].phone,
+                    email:user[0].email
+                 },
+                 'qwertyuiop',
+                 {
+                    expiresIn:'24h'
+                 }
+                 )
+                 res.status(200).json({
+                    username:user[0].username,
+                    userType:user[0].userType,
+                    phone:user[0].phone,
+                    email:user[0].email,
+                    token:token
+                 });
+                }
+            })
+        }
+    }).catch((err)=>{
+        res.status(500).json({
+            error :err
+        })
+    })
+}
 // exports.getAllUsers = (req, res) => {
 //   res.json(users);
 // };

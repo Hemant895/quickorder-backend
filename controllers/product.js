@@ -2,7 +2,6 @@ const fs = require('fs');
 const model = require('../models/product')
 const mongoose = require('mongoose');
 const Product = model.Product;
-
 // Create
 exports.createProduct = (req, res) => {
   const product = new Product(req.body);
