@@ -19,6 +19,14 @@
         "dest": "index.js"
       },
       {
+        "src": "/user",
+        "dest": "index.js"
+      },
+      {
+        "src": "/user/(.*)",
+        "dest": "index.js"
+      },
+      {
         "src": "/add",
         "dest": "build/index.html"
       },
