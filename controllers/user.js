@@ -26,7 +26,7 @@ exports.createUser = (req, res,next) => {
             if(err){
               res.status(500).json({error:err});
             } else{
-              res.status(200).json({newUser:result});
+              res.status(200).json({newUser:result,status:200});
             }
           })
     }
