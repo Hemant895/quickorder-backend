@@ -60,8 +60,8 @@ exports.login =  (req, res,next) => {
                     userType:user[0].userType,
                     phone:user[0].phone,
                     email:user[0].email,
-                    token:token
-                 });
+                    token:token,
+                    status:200 });
                 }
             })
         }
